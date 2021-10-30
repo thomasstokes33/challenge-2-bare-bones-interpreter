@@ -14,7 +14,7 @@ import java.util.regex.Pattern;
  * will check Syntax
  */
 public class Parser {
-  
+
 
   public static void main(String[] args) {
     Parser theparser = new Parser();
@@ -49,19 +49,19 @@ public class Parser {
 
     while (position < (parsedTree.size() - 1)) {
       String[] currentInstruction = parsedTree.get(position);
-      if (currentInstruction[0] == "clear") {
+      if (currentInstruction[0] == "clear" && currentInstruction.length == 2) {
         //check if next instruction is a variable
         if (!Pattern.matches("[A-Za-z]+[A-Za-z0-9]", currentInstruction[1])) {
           System.out.println("error");
           System.exit(0);
         }
-      } else if (currentInstruction[0] == "incr") {
+      } else if (currentInstruction[0] == "incr" && currentInstruction.length == 2) {
         //check if next is valid var name
         if (!Pattern.matches("[A-Za-z]+[A-Za-z0-9]", currentInstruction[1])) {
           System.out.println("error");
           System.exit(0);
         }
-      } else if (currentInstruction[0] == "decr") {
+      } else if (currentInstruction[0] == "decr" && currentInstruction.length == 2) {
         //check if next is valid var name. the executer will check if var exits already
         if (!Pattern.matches("[A-Za-z]+[A-Za-z0-9]", currentInstruction[1])) {
           System.out.println("error");
@@ -69,11 +69,15 @@ public class Parser {
         }
 
 
-      } else if (currentInstruction[0] == "while") {
+      } else if (currentInstruction[0] == "while" && currentInstruction.length == 4) {
         //check if next is not 0 do etc and then initiate object. end handled by this
-        WhileObject whileReader = new WhileObject(position);
+        if (!Pattern.matches("[A-Za-z]+[A-Za-z0-9]", currentInstruction[1])
+            || currentInstruction[2] != "not" || !Pattern.matches("[0-9]+",
+            currentInstruction[3])) {
+          WhileObject whileReader = new WhileObject(position);
+        }
 
-      } else if (currentInstruction[0] == "end") {
+      } else if (currentInstruction[0] == "end" && currentInstruction.length == 1) {
 
       }
       position += 1;
