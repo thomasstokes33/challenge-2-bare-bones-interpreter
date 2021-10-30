@@ -52,19 +52,19 @@ public class Parser {
       if (currentInstruction[0] == "clear" && currentInstruction.length == 2) {
         //check if next instruction is a variable
         if (!Pattern.matches("[A-Za-z]+[A-Za-z0-9]", currentInstruction[1])) {
-          System.out.println("error");
+          System.out.println("error clear");
           System.exit(0);
         }
       } else if (currentInstruction[0] == "incr" && currentInstruction.length == 2) {
         //check if next is valid var name
         if (!Pattern.matches("[A-Za-z]+[A-Za-z0-9]", currentInstruction[1])) {
-          System.out.println("error");
+          System.out.println("error incr");
           System.exit(0);
         }
       } else if (currentInstruction[0] == "decr" && currentInstruction.length == 2) {
         //check if next is valid var name. the executer will check if var exits already
         if (!Pattern.matches("[A-Za-z]+[A-Za-z0-9]", currentInstruction[1])) {
-          System.out.println("error");
+          System.out.println("error decr");
           System.exit(0);
         }
 
