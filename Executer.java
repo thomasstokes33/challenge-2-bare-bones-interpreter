@@ -25,6 +25,9 @@ public class Executer {
         variables.put(currentKey, variables.get(currentKey) - 1);
       } else if (runList.get(position)[0] == "while") {
         ;
+        //check condition and jump or continue
+      } else if (runList.get(position)[0] == "end") {
+        ;//jumps back
       }
     }
   }

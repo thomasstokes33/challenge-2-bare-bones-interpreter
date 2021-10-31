@@ -15,6 +15,7 @@ import java.util.regex.Pattern;
  */
 
 public class Parser {
+
   //TODO: update javadoc and comment
   //TODO: test syntax parser
   //TODO: write executer
@@ -56,18 +57,21 @@ public class Parser {
     String[] positionArray = returned.remove(returned.size() - 1);
     int lastIndex = Integer.parseInt(positionArray[0]);
     System.out.println(returned.toString());
-    for (String[] instruction : returned) {
-      for (int i = 0; i<instruction.length; i++) {
+    for (String[] instruction : returned) { //outputs the parsed program
+      for (int i = 0; i < instruction.length; i++) {
         System.out.println(instruction[i]);
       }
     }
+    Executer codeExecuter = new Executer(returned);
+    codeExecuter.interpreter();
+
   }
 
   public List<String[]> run(List<String[]> parsedTree, int position) {
 
-
-    while (position < (parsedTree.size() )) { //TODO: what if the program reaches the end of a barebones while without end. maybe have if type not equal to root then error message
-      System.out.println(position+" "+parsedTree.size());
+    while (position
+        < (parsedTree.size())) { //TODO: what if the program reaches the end of a barebones while without end. maybe have if type not equal to root then error message
+      //System.out.println(position+" "+parsedTree.size());
       String[] currentInstruction = parsedTree.get(position);
       if (currentInstruction[0].equals("clear") && currentInstruction.length == 2) {
         //check if next instruction is a variable
@@ -96,20 +100,22 @@ public class Parser {
             currentInstruction[3])) {
 
           Parser newParser = new Parser(position, null);
-          position+=1; /*the location of this increment
+          position += 1; /*the location of this increment
           is important because the position must be incremented to avoid an infinite loop but start
           id must be the same as the present position.*/
           parsedTree = newParser.run(parsedTree, position);
           String[] positionArray = parsedTree.remove(parsedTree.size() - 1);
 
           position = Integer.parseInt(positionArray[0]);
-          System.out.println("escaped loop"); //maybe add a count for end and while and check they match
+          System.out.println(
+              "escaped loop"); //maybe add a count for end and while and check they match
 
         }
 
-      } else if (currentInstruction[0].equals("end") && currentInstruction.length == 1 && type == null) {
+      } else if (currentInstruction[0].equals("end") && currentInstruction.length == 1
+          && type == null) {
         //update the while jump to and end pointers and give back the new position
-        System.out.println("end"+startid);
+        System.out.println("end" + startid);
         parsedTree.get(startid)[4] = Integer.toString(position);
         parsedTree.get(position)[0] = Integer.toString(startid);
         String[] returnIndex = Integer.toString(position).split(" ");
