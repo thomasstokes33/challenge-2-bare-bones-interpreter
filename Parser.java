@@ -13,11 +13,22 @@ import java.util.regex.Pattern;
  * uniform manner, which will be read and executed in a different manner by this class. The parser
  * will check Syntax
  */
-public class Parser {
 
+public class Parser {
+  //TODO: update javadoc and comment
+  //TODO: test syntax parser
+  //TODO: write executer
+  //TODO: check style
+  private int startid;
+  private String type;
+
+  public Parser(int index, String thetype) {
+    startid = index;
+    type = thetype;
+  }
 
   public static void main(String[] args) {
-    Parser theparser = new Parser();
+    Parser theparser = new Parser(0, "root");
     theparser.setup();
 
   }
@@ -25,7 +36,7 @@ public class Parser {
   public void setup() {
 
     List<String> theTree = new ArrayList<>();
-    theTree = readTextFile("sample.txt");
+    theTree = readTextFile("sample2.txt");
 //    theTree.add("clear x");
 //    theTree.add("incr x");
 //    theTree.add("incr x");
@@ -41,47 +52,84 @@ public class Parser {
 
     }
 
-    run(parsedTree, 0);
+    List<String[]> returned = run(parsedTree, startid);
+    String[] positionArray = returned.remove(returned.size() - 1);
+    int lastIndex = Integer.parseInt(positionArray[0]);
+    System.out.println(returned.toString());
+    for (String[] instruction : returned) {
+      for (int i = 0; i<instruction.length; i++) {
+        System.out.println(instruction[i]);
+      }
+    }
   }
 
-  public void run(List<String[]> parsedTree, int position) {
-    // TODO: now I need to add in error checking and finally execute + write javadoc
+  public List<String[]> run(List<String[]> parsedTree, int position) {
 
-    while (position < (parsedTree.size() - 1)) {
+
+    while (position < (parsedTree.size() )) { //TODO: what if the program reaches the end of a barebones while without end. maybe have if type not equal to root then error message
+      System.out.println(position+" "+parsedTree.size());
       String[] currentInstruction = parsedTree.get(position);
-      if (currentInstruction[0] == "clear" && currentInstruction.length == 2) {
+      if (currentInstruction[0].equals("clear") && currentInstruction.length == 2) {
         //check if next instruction is a variable
-        if (!Pattern.matches("[A-Za-z]+[A-Za-z0-9]", currentInstruction[1])) {
-          System.out.println("error clear");
+        if (!Pattern.matches("[A-Za-z]+[A-Za-z0-9]*", currentInstruction[1])) {
+          System.out.println("error clear" + currentInstruction[1]);
           System.exit(0);
         }
-      } else if (currentInstruction[0] == "incr" && currentInstruction.length == 2) {
+      } else if (currentInstruction[0].equals("incr") && currentInstruction.length == 2) {
         //check if next is valid var name
-        if (!Pattern.matches("[A-Za-z]+[A-Za-z0-9]", currentInstruction[1])) {
+        if (!Pattern.matches("[A-Za-z]+[A-Za-z0-9]*", currentInstruction[1])) {
           System.out.println("error incr");
           System.exit(0);
         }
-      } else if (currentInstruction[0] == "decr" && currentInstruction.length == 2) {
+      } else if (currentInstruction[0].equals("decr") && currentInstruction.length == 2) {
         //check if next is valid var name. the executer will check if var exits already
-        if (!Pattern.matches("[A-Za-z]+[A-Za-z0-9]", currentInstruction[1])) {
+        if (!Pattern.matches("[A-Za-z]+[A-Za-z0-9]*", currentInstruction[1])) {
           System.out.println("error decr");
           System.exit(0);
         }
 
 
-      } else if (currentInstruction[0] == "while" && currentInstruction.length == 4) {
+      } else if (currentInstruction[0].equals("while") && currentInstruction.length == 5) {
         //check if next is not 0 do etc and then initiate object. end handled by this
-        if (!Pattern.matches("[A-Za-z]+[A-Za-z0-9]", currentInstruction[1])
+        if (!Pattern.matches("[A-Za-z]+[A-Za-z0-9]*", currentInstruction[1])
             || currentInstruction[2] != "not" || !Pattern.matches("[0-9]+",
             currentInstruction[3])) {
-          WhileObject whileReader = new WhileObject(position);
+
+          Parser newParser = new Parser(position, null);
+          position+=1; /*the location of this increment
+          is important because the position must be incremented to avoid an infinite loop but start
+          id must be the same as the present position.*/
+          parsedTree = newParser.run(parsedTree, position);
+          String[] positionArray = parsedTree.remove(parsedTree.size() - 1);
+
+          position = Integer.parseInt(positionArray[0]);
+          System.out.println("escaped loop"); //maybe add a count for end and while and check they match
+
         }
 
-      } else if (currentInstruction[0] == "end" && currentInstruction.length == 1) {
+      } else if (currentInstruction[0].equals("end") && currentInstruction.length == 1 && type == null) {
+        //update the while jump to and end pointers and give back the new position
+        System.out.println("end"+startid);
+        parsedTree.get(startid)[4] = Integer.toString(position);
+        parsedTree.get(position)[0] = Integer.toString(startid);
+        String[] returnIndex = Integer.toString(position).split(" ");
+        parsedTree.add(returnIndex);
+        return parsedTree;
 
+      } else {
+        System.out.println("stack error or expression not in vocabulary");
+        System.out.println(currentInstruction[0]);
+        System.exit(0);
       }
       position += 1;
     }
+    if (type == null) {
+      System.out.println("while finished without end");
+      System.out.println(position);
+    }
+    String[] returnIndex = Integer.toString(position).split(" ");
+    parsedTree.add(returnIndex);
+    return parsedTree;
 
 
   }

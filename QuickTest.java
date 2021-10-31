@@ -14,8 +14,10 @@ public class QuickTest {
       System.out.println(stringading.substring(0, 1));
 
     }
-
+    String[] splitUp = stringading.split(" ");
+    System.out.println(splitUp.length + " <- length and item ->" + splitUp[0]);
     List<String> things = new ArrayList<>();
+
     //System.out.println(things.get(0));
     Hashtable<String, Integer> thevars = new Hashtable<>();
     thevars.put("1", 1);
