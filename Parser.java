@@ -10,38 +10,46 @@ import java.util.regex.Pattern;
 
 /**
  * The Parser class aims to read through the code and convert it to something that can be read in a
- * uniform manner, which will be read and executed in a different manner by this class. The parser
- * will check Syntax
+ * uniform manner. This parsed code will hopefully be read and executed by an Executer object.
  */
-
 public class Parser {
 
-  //TODO: update javadoc and comment
+  //TODO: comment
   //TODO: test syntax parser
-  //TODO: write executer
   //TODO: check style
   private int startid;
   private String type;
 
+  /**
+   * Constructor
+   *
+   * @param index   start index
+   * @param thetype shows if the parser object is the root object at the bottom of the stack
+   */
   public Parser(int index, String thetype) {
     startid = index;
     type = thetype;
   }
 
+  /**
+   * Creates parser object and runs setup.
+   *
+   * @param args any arguments provided by the command line
+   */
   public static void main(String[] args) {
     Parser theparser = new Parser(0, "root");
     theparser.setup();
 
   }
 
+  /**
+   * This prepares the code for parsing and calls the actual parsing function. It takes the
+   * returned, parsed list and passes it to the Executer.
+   */
   public void setup() {
 
     List<String> theTree = new ArrayList<>();
-    theTree = readTextFile("sample2.txt");
-//    theTree.add("clear x");
-//    theTree.add("incr x");
-//    theTree.add("incr x");
-//    theTree.add("incr x");
+    theTree = readTextFile("sample.txt");
 
     List<String> whilestack = new ArrayList<>();
     List<String[]> parsedTree = new ArrayList<>();
@@ -67,6 +75,14 @@ public class Parser {
 
   }
 
+  /**
+   * This cycles through the instructions and checks the syntax as well as creating pointers for the
+   * while loops.
+   *
+   * @param parsedTree this is the semi parsedtree which hasn't been syntax checked
+   * @param position   the index to read
+   * @return the syntax-checked, parsed tree
+   */
   public List<String[]> run(List<String[]> parsedTree, int position) {
 
     while (position
@@ -96,21 +112,23 @@ public class Parser {
       } else if (currentInstruction[0].equals("while") && currentInstruction.length == 5) {
         //check if next is not 0 do etc and then initiate object. end handled by this
         if (!Pattern.matches("[A-Za-z]+[A-Za-z0-9]*", currentInstruction[1])
-            || currentInstruction[2] != "not" || !Pattern.matches("[0-9]+",
+            || !currentInstruction[2].equals("not") || !Pattern.matches("[0-9]+",
             currentInstruction[3])) {
+          System.out.println("error while");
+          System.exit(0);
+        }
 
-          Parser newParser = new Parser(position, null);
-          position += 1; /*the location of this increment
+        Parser newParser = new Parser(position, null);
+        position += 1; /*the location of this increment
           is important because the position must be incremented to avoid an infinite loop but start
           id must be the same as the present position.*/
-          parsedTree = newParser.run(parsedTree, position);
-          String[] positionArray = parsedTree.remove(parsedTree.size() - 1);
+        parsedTree = newParser.run(parsedTree, position);
+        String[] positionArray = parsedTree.remove(parsedTree.size() - 1);
 
-          position = Integer.parseInt(positionArray[0]);
-          System.out.println(
-              "escaped loop"); //maybe add a count for end and while and check they match
+        position = Integer.parseInt(positionArray[0]);
+        System.out.println(
+            "escaped loop"); //maybe add a count for end and while and check they match
 
-        }
 
       } else if (currentInstruction[0].equals("end") && currentInstruction.length == 1
           && type == null) {
@@ -133,13 +151,19 @@ public class Parser {
       System.out.println("while finished without end");
       System.out.println(position);
     }
+
     String[] returnIndex = Integer.toString(position).split(" ");
     parsedTree.add(returnIndex);
     return parsedTree;
 
-
   }
 
+  /**
+   * This method returns a list of all instructions without leading and trailing whitespace
+   *
+   * @param filename the name of the file containing the unparsed BareBones code
+   * @return the list of instructions
+   */
   public List<String> readTextFile(String filename) {
     List<String> returnList = new ArrayList<>();
     try {
