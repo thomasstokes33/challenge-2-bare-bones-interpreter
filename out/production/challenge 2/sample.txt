@@ -2,6 +2,6 @@ clear X;
 incr X;
 incr X;
 incr X;
-while X not 0 do;
+while X not 0 do; //hello mate
    decr X;
 end;

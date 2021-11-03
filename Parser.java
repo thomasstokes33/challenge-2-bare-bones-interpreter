@@ -49,7 +49,7 @@ public class Parser {
   public void setup() {
 
     List<String> theTree = new ArrayList<>();
-    theTree = readTextFile("sample.txt");
+    theTree = readTextFile("sample1.txt");
 
     List<String> whilestack = new ArrayList<>();
     List<String[]> parsedTree = new ArrayList<>();
@@ -150,6 +150,7 @@ public class Parser {
     if (type == null) {
       System.out.println("while finished without end");
       System.out.println(position);
+      System.exit(0);
     }
 
     String[] returnIndex = Integer.toString(position).split(" ");
@@ -178,8 +179,19 @@ public class Parser {
       String theProgramString = "";
       while ((line = obj.readLine()) != null) {
         //System.out.println(line);
+        line = line.split("//.")[0]; //removes comments
+
         theProgramString += line;
       }
+ /*     String[] commentsRemoved = theProgramString.split("\\.*");
+
+      System.out.println(commentsRemoved[0]);
+      theProgramString = "";
+      for (String item : commentsRemoved) {
+        theProgramString += item;
+      }*/
+      System.out.println("*****");
+      System.out.println(theProgramString);
       String[] minilist = theProgramString.split("[ \n\t\r]*;[ \n\t\r]*");
       returnList = Arrays.stream(minilist).toList();
       obj.close();
